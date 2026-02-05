@@ -66,6 +66,24 @@ export async function fetchOrder(id: string): Promise<Order | null> {
   }
 }
 
+export async function registerPushToken(
+  token: string,
+  deviceName: string
+): Promise<boolean> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/push/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, deviceName })
+    });
+    const json: ApiResponse<null> = await response.json();
+    return json.success === true;
+  } catch (error) {
+    console.error('Error registering push token:', error);
+    return false;
+  }
+}
+
 export async function updateOrderStatus(
   id: string,
   status: OrderStatus,
