@@ -1,11 +1,11 @@
 import { StyleSheet, View } from 'react-native';
 
-import { OrderDetail } from '@/components/order-detail';
+import { OrderList } from '@/components/order-list';
 
 export default function HomeScreen() {
   return (
     <View style={styles.container}>
-      <OrderDetail />
+      <OrderList />
     </View>
   );
 }
