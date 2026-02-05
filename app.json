@@ -4,7 +4,7 @@
     "slug": "utilesApp",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/logo-utilesya-1024.png",
     "scheme": "utilesapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -32,7 +32,10 @@
               "pathPrefix": "/order"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
@@ -58,6 +61,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "da5dd29e-72c1-46e0-8de4-e399459b890b"
+      }
+    },
+    "owner": "danielcarlosrodriguez"
   }
 }

@@ -89,7 +89,9 @@ export function usePushNotifications() {
 
       // Get the Expo push token
       console.log('Push: Getting Expo push token...');
-      const tokenData = await Notifications.getExpoPushTokenAsync();
+      const tokenData = await Notifications.getExpoPushTokenAsync({
+        projectId: 'da5dd29e-72c1-46e0-8de4-e399459b890b',
+      });
       const token = tokenData.data;
       console.log('Push: Token obtained =', token);
       setExpoPushToken(token);
