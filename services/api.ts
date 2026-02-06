@@ -84,6 +84,39 @@ export async function registerPushToken(
   }
 }
 
+export type Product = {
+  _id?: string;
+  refid: string;
+  descripción: string;
+  categoría?: string;
+  categoryId?: string | { $oid?: string };
+  precio: number;
+  stock: number;
+  activo: boolean;
+  marca: string;
+  imagen: string[];
+  imagenCloudinary?: string[];
+  sku: string;
+  destacado: boolean;
+  descuento: number | null;
+  tags: string[];
+  detalle?: string;
+};
+
+export async function fetchProducts(): Promise<Product[]> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/utiles/products`);
+    const json: ApiResponse<Product[]> = await response.json();
+    if (json.success && json.data) {
+      return json.data;
+    }
+    return [];
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    return [];
+  }
+}
+
 export async function updateOrderStatus(
   id: string,
   status: OrderStatus,

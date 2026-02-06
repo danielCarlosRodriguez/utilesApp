@@ -18,7 +18,7 @@ function PushNotificationHandler() {
   const { loadOrderById } = useOrderContext();
   const router = useRouter();
   const { pushDebugLog } = usePushNotifications();
-  const [showDebug, setShowDebug] = useState(true);
+  const [showDebug, setShowDebug] = useState(false);
 
   useEffect(() => {
     // Handle notification tap (when app opens from notification)
