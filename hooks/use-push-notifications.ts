@@ -19,8 +19,14 @@ Notifications.setNotificationHandler({
 export function usePushNotifications() {
   const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
   const [notification, setNotification] = useState<Notifications.Notification | null>(null);
+  const [pushDebugLog, setPushDebugLog] = useState<string[]>([]);
   const notificationListener = useRef<Notifications.EventSubscription>();
   const responseListener = useRef<Notifications.EventSubscription>();
+
+  function addLog(msg: string) {
+    console.log(msg);
+    setPushDebugLog(prev => [...prev, `${new Date().toLocaleTimeString()} ${msg}`]);
+  }
 
   useEffect(() => {
     registerForPushNotifications();
@@ -29,6 +35,7 @@ export function usePushNotifications() {
     notificationListener.current = Notifications.addNotificationReceivedListener(
       (notification) => {
         setNotification(notification);
+        addLog('Push: Notification received in foreground!');
       }
     );
 
@@ -36,6 +43,7 @@ export function usePushNotifications() {
     responseListener.current = Notifications.addNotificationResponseReceivedListener(
       (response) => {
         setNotification(response.notification);
+        addLog('Push: Notification tapped!');
       }
     );
 
@@ -51,28 +59,28 @@ export function usePushNotifications() {
 
   async function registerForPushNotifications() {
     try {
-      console.log('Push: Starting registration...');
-      console.log('Push: isDevice =', Device.isDevice);
+      addLog('Push: Starting registration...');
+      addLog(`Push: isDevice = ${Device.isDevice}`);
 
       // Push notifications only work on physical devices
       if (!Device.isDevice) {
-        console.log('Push: Must use physical device');
+        addLog('Push: Must use physical device');
         return;
       }
 
       // Check / request permissions
       const { status: existingStatus } = await Notifications.getPermissionsAsync();
-      console.log('Push: Existing permission status =', existingStatus);
+      addLog(`Push: Existing permission = ${existingStatus}`);
       let finalStatus = existingStatus;
 
       if (existingStatus !== 'granted') {
         const { status } = await Notifications.requestPermissionsAsync();
         finalStatus = status;
-        console.log('Push: Requested permission, status =', finalStatus);
+        addLog(`Push: Requested permission = ${finalStatus}`);
       }
 
       if (finalStatus !== 'granted') {
-        console.log('Push: Permission not granted');
+        addLog('Push: Permission NOT granted');
         return;
       }
 
@@ -84,36 +92,37 @@ export function usePushNotifications() {
           vibrationPattern: [0, 250, 250, 250],
           sound: 'default',
         });
-        console.log('Push: Android channel created');
+        addLog('Push: Android channel created');
       }
 
       // Get the Expo push token
-      console.log('Push: Getting Expo push token...');
+      addLog('Push: Getting Expo push token...');
       const tokenData = await Notifications.getExpoPushTokenAsync({
         projectId: 'da5dd29e-72c1-46e0-8de4-e399459b890b',
       });
       const token = tokenData.data;
-      console.log('Push: Token obtained =', token);
+      addLog(`Push: Token = ${token}`);
       setExpoPushToken(token);
 
       // Check if we already registered this token
       const storedToken = await AsyncStorage.getItem(PUSH_TOKEN_KEY);
       if (storedToken === token) {
-        console.log('Push: Token already registered, skipping');
+        addLog('Push: Token already registered, skipping');
         return;
       }
 
       // Register token in backend
       const deviceName = Device.modelName || Device.deviceName || 'Unknown';
-      console.log('Push: Registering token in backend, device =', deviceName);
+      addLog(`Push: Registering in backend, device = ${deviceName}`);
       const success = await registerPushToken(token, deviceName);
-      console.log('Push: Backend registration result =', success);
+      addLog(`Push: Backend result = ${success}`);
 
       if (success) {
         await AsyncStorage.setItem(PUSH_TOKEN_KEY, token);
-        console.log('Push: Token registered and saved successfully');
+        addLog('Push: Token saved successfully');
       }
     } catch (error) {
+      addLog(`Push: ERROR: ${error}`);
       console.error('Push: Error registering:', error);
     }
   }
@@ -121,5 +130,6 @@ export function usePushNotifications() {
   return {
     expoPushToken,
     notification,
+    pushDebugLog,
   };
 }
